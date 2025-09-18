@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16
+    container_name: formsite-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: formsitedb
+    ports:
+      - "5432:5432"         # opcional expor para ferramentas locais
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d formsitedb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    container_name: formsite-web
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      # IMPORTANTÍSSIMO: connection string usando o HOST "db" (nome do serviço)
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=formsitedb;Username=postgres;Password=postgres"
+    ports:
+      - "8080:8080"         # abre http://localhost:8080
+    # se quiser hot-reload local, dá pra montar o código; p/ agora, mantemos build estático
+
+volumes:
+  pgdata:

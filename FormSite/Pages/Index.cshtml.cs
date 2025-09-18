@@ -17,12 +17,12 @@ public class IndexModel : PageModel
     [BindProperty, Required(ErrorMessage = "Selecione pelo menos um item.")]
     public List<int> SelectedOptionIds { get; set; } = new();
 
-    // Identificador simples do usuário para exemplo (na prática, use login/claims/cookie)
+    // Identificador simples do usuï¿½rio para exemplo (na prï¿½tica, use login/claims/cookie)
     private string UserToken => HttpContext.Connection.RemoteIpAddress?.ToString() ?? Guid.NewGuid().ToString();
 
     public async Task OnGet()
     {
-        // Opções ainda não reservadas
+        // Opï¿½ï¿½es ainda nï¿½o reservadas
         var reservedIds = await _db.Reservations.Select(r => r.OptionId).ToListAsync();
 
         Available = await _db.Options
@@ -39,7 +39,7 @@ public class IndexModel : PageModel
             return Page();
         }
 
-        // Tenta reservar todas em uma transação
+        // Tenta reservar todas em uma transaï¿½ï¿½o
         using var tx = await _db.Database.BeginTransactionAsync();
 
         try
@@ -51,7 +51,7 @@ public class IndexModel : PageModel
 
             if (alreadyReserved.Any())
             {
-                ModelState.AddModelError(string.Empty, "Alguns itens já foram selecionados por outra pessoa.");
+                ModelState.AddModelError(string.Empty, "Alguns itens jï¿½ foram selecionados por outra pessoa.");
                 await OnGet();
                 return Page();
             }
@@ -72,9 +72,9 @@ public class IndexModel : PageModel
         }
         catch (DbUpdateException)
         {
-            // Pega colisão de UNIQUE (se duas pessoas clicarem quase juntas)
+            // Pega colisï¿½o de UNIQUE (se duas pessoas clicarem quase juntas)
             await tx.RollbackAsync();
-            ModelState.AddModelError(string.Empty, "Conflito: algum item ficou indisponível durante o envio.");
+            ModelState.AddModelError(string.Empty, "Conflito: algum item ficou indisponï¿½vel durante o envio.");
             await OnGet();
             return Page();
         }
