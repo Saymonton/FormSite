@@ -1,0 +1,40 @@
+﻿@page
+@model FormSite.Pages.IndexModel
+@{
+    ViewData["Title"] = "Seleção de Itens";
+}
+
+<h1>Selecione os itens disponíveis</h1>
+
+@if (!ModelState.IsValid)
+{
+    <div class="text-danger">
+        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@err.ErrorMessage</div>
+        }
+    </div>
+}
+
+@if (!Model.Available.Any())
+{
+    <p>Não há itens disponíveis no momento.</p>
+}
+else
+{
+    <form method="post">
+        <ul>
+            @foreach (var opt in Model.Available)
+            {
+                <li>
+                    <label>
+                        <input type="checkbox" name="SelectedOptionIds" value="@opt.Id" />
+                        @opt.Name
+                    </label>
+                </li>
+            }
+        </ul>
+
+        <button type="submit">Enviar</button>
+    </form>
+}
